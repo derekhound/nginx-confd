@@ -4,14 +4,14 @@ MAINTAINER Jacek Marchwicki "jacek.marchwicki@gmail.com"
 
 RUN apt-get update && apt-get install -y --force-yes wget apache2-utils && apt-get clean
 # Install confd
-RUN wget --no-check-certificate --output-document=/usr/local/bin/confd https://github.com/kelseyhightower/confd/releases/download/v0.7.1/confd-0.7.1-linux-amd64 && chmod +x /usr/local/bin/confd
+RUN wget --no-check-certificate --output-document=/usr/local/bin/confd https://github.com/kelseyhightower/confd/releases/download/v0.11.0/confd-0.11.0-linux-amd64 && chmod +x /usr/local/bin/confd
 
 # Prepare config files
 RUN mkdir -p /etc/confd/{conf.d,templates}
 COPY conf.d /etc/confd/conf.d
 COPY templates /etc/confd/templates
 
-# startup scripts
+# Startup scripts
 COPY scripts/ /usr/local/bin
 
 # Setup nginx
