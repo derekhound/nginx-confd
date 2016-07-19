@@ -1,26 +1,29 @@
 #!/bin/bash
-{{range $dir := lsdir "/services/nginx"}}
+{{$env := getenv "ENVIRONMENT"}}
+
+{{$sites := printf "/services/demo-nginx/%s" $env}}
+{{range $dir := lsdir $sites}}
 
 {{$filename := base $dir}}
 # {{$filename}}
 
-{{$sslcrt := printf "/services/nginx/%s/ssl-crt" $filename}}
+{{$sslcrt := printf "/services/demo-nginx/%s/%s/ssl-crt" $env $filename}}
 {{if exists $sslcrt}}
 echo "{{getv $sslcrt}}" > /etc/nginx/keys/{{$filename}}.crt
 
-{{$sslkey := printf "/services/nginx/%s/ssl-key" $filename}}
+{{$sslkey := printf "/services/demo-nginx/%s/%s/ssl-key" $env $filename}}
 echo "{{getv $sslkey}}" > /etc/nginx/keys/{{$filename}}.key
 {{end}}
 
-{{$restrict := printf "/services/nginx/%s/restrict" $filename}}
+{{$restrict := printf "/services/demo-nginx/%s/%s/restrict" $env $filename}}
 {{if exists $restrict}}
   {{$htpassword := printf "/etc/nginx/keys/%s.htpasswd" $filename }}
   rm {{$htpassword}}
   touch {{$htpassword}}
 
-  {{$restrictusers := printf "/services/nginx/%s/restrict-users" $filename}}
+  {{$restrictusers := printf "/services/demo-nginx/%s/%s/restrict-users" $env $filename}}
   {{range $restriction := ls $restrictusers}}
-    {{$key := printf "/services/nginx/%s/restrict-users/%s" $filename $restriction}}
+    {{$key := printf "/services/demo-nginx/%s/%s/restrict-users/%s" $env $filename $restriction}}
     # {{$restriction}}
     {{$password := getv $key}}
     htpasswd -b {{$htpassword}} {{$restriction}} "{{$password}}"

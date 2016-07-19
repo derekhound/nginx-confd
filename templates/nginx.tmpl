@@ -1,12 +1,15 @@
-{{range $dir := lsdir "/services/nginx"}}
+{{$env := getenv "ENVIRONMENT"}}
+
+{{$sites := printf "/services/demo-nginx/%s" $env}}
+{{range $dir := lsdir $sites}}
 
 {{$filename := base $dir}}
-{{$custdir := printf "/services/nginx/%s/servers/" $filename}}
+{{$custdir := printf "/services/demo-nginx/%s/%s/servers/" $env $filename}}
 {{if ne (len (ls $custdir)) 0}}
 upstream {{$filename}} {
-	{{$custdir := printf "/services/nginx/%s/servers/" $filename}}
+	{{$custdir := printf "/services/demo-nginx/%s/%s/servers/" $env $filename}}
 	{{range ls $custdir}}
-		{{$key := printf "/services/nginx/%s/servers/%s" $filename .}}
+		{{$key := printf "/services/demo-nginx/%s/%s/servers/%s" $env $filename .}}
 		{{$value := getv $key}}
 		server {{$data := json $value}}{{$data.ip}}:{{$data.port}};
 	{{end}}
@@ -18,7 +21,7 @@ upstream {{$filename}} {
 {{end}}
 
 
-{{$servernamedir := printf "/services/nginx/%s/root" $filename}}
+{{$servernamedir := printf "/services/demo-nginx/%s/%s/root" $env $filename}}
 
 server {
 	listen 80;
@@ -35,7 +38,7 @@ server {
 
 	client_max_body_size 400m;
 
-{{$sslcrt := printf "/services/nginx/%s/ssl-crt" $filename}}
+{{$sslcrt := printf "/services/demo-nginx/%s/%s/ssl-crt" $env $filename}}
 {{if exists $sslcrt}}
 	ssl on;
 	ssl_certificate /etc/nginx/keys/{{$filename}}.crt;
@@ -66,7 +69,7 @@ server {
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto $scheme;
-		{{$restrict := printf "/services/nginx/%s/restrict" $filename}}
+		{{$restrict := printf "/services/demo-nginx/%s/%s/restrict" $env $filename}}
 		{{if exists $restrict}}
   		  {{$htpassword := printf "/etc/nginx/keys/%s.htpasswd" $filename }}
 		  auth_basic "Restricted";

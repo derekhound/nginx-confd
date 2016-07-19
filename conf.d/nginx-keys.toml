@@ -9,7 +9,7 @@ dest = "/etc/nginx/nginx-keys.sh"
 
 # The etcd keys or directory to watch.  This is where the information to fill in
 # the template will come from.
-keys = [ "/services/nginx" ]
+keys = [ "/services/demo-nginx" ]
 
 # File ownership and mode information
 owner = "root"
